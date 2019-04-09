@@ -1,4 +1,4 @@
-<!-- Display all shortened URLs +long URL -->
+<!-- Template for http://localhost:8080/urls/:shortURL -->
 
 <!DOCTYPE html>
 
@@ -14,6 +14,7 @@
 </head>
 
 <body style="font-size:20px; padding:50px;">
+    <% include partials/_header %>
     <a href=""><p>Create New TinyURL</p></a>
     <h3>TinyURL for <%= longURL %></h3>
     <h4><%= shortURL %></h4>
