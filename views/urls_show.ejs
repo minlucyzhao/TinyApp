@@ -1,4 +1,4 @@
-<!-- Display all shortened URLs -->
+<!-- Display all shortened URLs +long URL -->
 
 <!DOCTYPE html>
 
@@ -14,13 +14,9 @@
 </head>
 
 <body style="font-size:20px; padding:50px;">
-    <a href="">Create New TinyURL</a>
-    <ul>
-        <% for(shortURL in urls) { %>
-            <li><%= shortURL %></li>
-        <% } %>
-    </ul>
-    <a href=""></a>
+    <a href=""><p>Create New TinyURL</p></a>
+    <h3>TinyURL for <%= longURL %></h3>
+    <h4><%= shortURL %></h4>
 </body>
 
 </html>

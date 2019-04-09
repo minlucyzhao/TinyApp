@@ -14,11 +14,18 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+//http://localhost:8080/urls
 app.get("/urls", (req, res) => {
-  //urls = urlDatabase
+  //urls = urlDatabase 
   let templateVars = { urls: urlDatabase }; 
   res.render("urls_index", templateVars);
 });
+
+//http://localhost:8080/urls/id
+app.get("/urls/:shortURL", (req, res) => {
+    let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+    res.render("urls_show", templateVars);
+  });
 
 app.get("/urls.json", (req, res) => {
     res.json(urlDatabase);
