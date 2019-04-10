@@ -1,7 +1,13 @@
 <h1>TinyApp</h1>
-<form method="POST" action="/login">
-      <h5>Username: </h5>
-      <input class="form-control" type="text" name="username"> 
-      <p><%= username %></p>
-      <button type="submit" class="btn btn-primary">Login</button>
-</form>
+    <% if(username) { %>
+        <form method="POST" action="/logout">
+            <h5>Logged In As: </a><%= username %></h5>
+            <button type="submit" class="btn btn-primary">Logout</button>
+        </form>
+    <% } else { %>
+        <form method="POST" action="/login">
+            <h5>Username: </h5>
+            <input class="form-control" type="text" name="username">
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    <% } %>

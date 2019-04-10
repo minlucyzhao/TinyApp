@@ -48,21 +48,28 @@ app.post("/urls", (req, res) => {
 
 
 //---------------------------------------------------------------
-//COOKIE
+//LOGOUT
+//---------------------------------------------------------------
+app.post("/logout", (req,res) => {
+    res.clearCookie("username");
+    res.redirect("/urls");
+});
+//---------------------------------------------------------------
+
+
+//---------------------------------------------------------------
+//COOKIE & LOGIN
 //---------------------------------------------------------------
 app.post("/login", (req,res) => {
     res.cookie("username", req.body.username);
     res.redirect("/urls");
 });
-
 //---------------------------------------------------------------
-
 
 
 //---------------------------------------------------------------
 //DELETE FUNCTION
 //---------------------------------------------------------------
-
 //Deletes a URL resource when user press DELETE button
 //from urls_index.ejs (http://localhost:8080/urls)
 app.post("/urls/:shortURL/delete", (req,res) => {
@@ -75,7 +82,6 @@ app.post("/urls/:shortURL/delete", (req,res) => {
 //---------------------------------------------------------------
 //EDIT FUNCTION
 //---------------------------------------------------------------
-
 //Updates longURL 
 //from urls_show.ejs 
 app.post("/urls/:shortURL/update", (req,res) => {
