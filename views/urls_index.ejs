@@ -17,11 +17,23 @@
     <% include partials/_header %>
     <a href="">Create New TinyURL</a>
     <h3>My URLs</h3>
-    <ul>
-        <% for(shortURL in urls) { %>
-            <li><%= shortURL %> : <%= urls[shortURL] %></li>
-        <% } %>
-    </ul>
+        <ul>
+            <% for(shortURL in urls) { %>
+            <li> <%= shortURL %> 👉 
+                <a href=<%= urls[shortURL] %>>
+                    <%= urls[shortURL] %>
+                </a>
+                <a href="">
+                    EDIT ✎
+                </a>
+                <form method="POST" action="/urls/<%= shortURL %>/delete">
+                    <button type="submit">
+                        DELETE 🗑️
+                    </button>
+                </form>
+            </li>
+            <% } %>
+        </ul>
     <a href=""></a>
 </body>
 

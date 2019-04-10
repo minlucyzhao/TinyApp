@@ -34,18 +34,26 @@ app.get("/urls/new", (req, res) => {
     res.render("urls_new");
   });
 
+app.post("/urls", (req, res) => {
+    let randomShortURL = generateRandomString();
+    urlDatabase[randomShortURL] = req.body.longURL;
+    res.redirect(`/urls/${randomShortURL}`);
+});
+
+//Deletes a URL resource when user press DELETE button
+//from urls_index.ejs
+app.post("/urls/:shortURL/delete", (req,res) => {
+    console.log(req);
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+});
+
 //The "u" is to differentiate itself from /url/ and so it doesn't conflict with the other GET routes
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   longURL
   ? res.redirect(longURL) 
   : res.send(`${req.params.shortURL} is not a valid short URL`);
-});
-
-app.post("/urls", (req, res) => {
-    let randomShortURL = generateRandomString();
-    urlDatabase[randomShortURL] = req.body.longURL;
-    res.redirect(`/urls/${randomShortURL}`);
 });
 
 //http://localhost:8080/urls/:shortURL
