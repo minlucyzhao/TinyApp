@@ -1,44 +1,89 @@
+
+//---------------------------------------------------------------
+//TINYAPP: A SHORTURL & LONGURL CONVERSION ENGINE
+//---------------------------------------------------------------
+
+
+//---------------------------------------------------------------
+//VARIABLES
+//---------------------------------------------------------------
+const bodyParser = require("body-parser");
 var express = require("express");
 var cookieParser = require('cookie-parser');
-const bodyParser = require("body-parser");
+
 var app = express();
+var PORT = 8080; 
+//---------------------------------------------------------------
 
-var PORT = 8080; // default port 8080
 
-//Tells the Express app to use EJS as its templating engine
-app.set("view engine", "ejs")
-//Tells the Express app to use cookieParser as parameter for use
-app.use(cookieParser());
-
+//---------------------------------------------------------------
+//DATA
+//---------------------------------------------------------------
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
 //Global Object "users"
-const users = {}
+const users = {};
+//---------------------------------------------------------------
+
+
+//---------------------------------------------------------------
+//INITIALIZATION
+//---------------------------------------------------------------
+//Tells the Express app to use EJS as its templating engine
+app.set("view engine", "ejs")
+
+//Tells the Express app to use cookieParser as parameter for use
+app.use(cookieParser());
 
 //This needs to come before all of our routes
 app.use(bodyParser.urlencoded({extended: true}));
+//---------------------------------------------------------------
 
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
+//---------------------------------------------------------------
+//MAIN PAGE
 //http://localhost:8080/urls
+//---------------------------------------------------------------
 app.get("/urls", (req, res) => {
-  //urls = urlDatabase 
-  let templateVars = {userID: req.cookies["userID"], urls: urlDatabase }; 
+    //let cookie_id = res.cookie("Cookies ", res.cookie).userID
+    let templateVars = {
+      user_id: req.cookies["user_id"], 
+      urls: urlDatabase,
+      email: users[req.cookies["user_id"]].email
+    }; 
   res.render("urls_index", templateVars);
 });
+//---------------------------------------------------------------
 
+
+//---------------------------------------------------------------
+//PAGE FOR EACH SHORTURL
+//http://localhost:8080/urls/:shortURL
+//---------------------------------------------------------------
+app.get("/urls/:shortURL", (req, res) => {
+    let templateVars = {
+        user_id: req.cookies["user_id"], 
+        shortURL: req.params.shortURL, 
+        longURL: urlDatabase[req.params.shortURL] 
+    };
+    res.render("urls_show", templateVars);
+  });
+//---------------------------------------------------------------
+
+
+//---------------------------------------------------------------
+//PAGE TO CREATE NEW URL
 //http://localhost:8080/urls/new
+//---------------------------------------------------------------
 //Purpose: GET Route to Show the Form to the User
 //THIS needs to be BEFORE app.get("/urls/:id", ...) B/C any call to /urls/new will be handled by app.get("/urls/:id", ...) (as Express will think that "new" is a route parameter)
 //Rule of Thumb: Routes should be ordered from most specific to least specific
 app.get("/urls/new", (req, res) => {
-    let templateVars = {userID: req.cookies["userID"]}
+    let templateVars = {
+        user_id: req.cookies["user_id"]}
     res.render("urls_new", templateVars);
   });
 
@@ -48,10 +93,11 @@ app.post("/urls", (req, res) => {
     res.redirect('/urls');
     // res.redirect(`/urls/${randomShortURL}`);
 });
+//---------------------------------------------------------------
 
 
 //---------------------------------------------------------------
-//REGISTER
+//USER REGISTER
 //from registration.ejs
 //---------------------------------------------------------------
 app.get("/register", (req, res) => {
@@ -59,8 +105,9 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-    let userID = generateRandomString();
-    users[userId] = {};
+    console.log("1111");
+    let user_id = generateRandomString();
+    users[user_id] = {};
     let userEmail = req.body.email;
     let userPassword = req.body.password;
 
@@ -72,10 +119,10 @@ app.post("/register", (req, res) => {
         res.send("Your email already exists.");
     } else {
         //add a new user object to the global user (id, email, password)
-        users[userID]["id"] = userID;
-        users[userID]["email"] = userEmail;
-        users[userID]["password"] = userPassword;
-        res.cookie("user_id", userID); //sets the cookie
+        users[user_id]["id"] = user_id;
+        users[user_id]["email"] = userEmail;
+        users[user_id]["password"] = userPassword;
+        res.cookie("user_id", users[user_id]["id"]); //sets the cookie
         res.redirect("/urls");
     }
 });
@@ -98,27 +145,31 @@ function emailLookup(userEmail) {
 
 
 //---------------------------------------------------------------
+//LOGIN
+//---------------------------------------------------------------
+app.get ("/login", (req,res) => {
+    res.render("/login");
+})
+
+app.post("/login", (req,res) => {
+    res.cookie("user_id", req.body.userID);
+    res.redirect("/urls");
+});
+//---------------------------------------------------------------
+
+
+//---------------------------------------------------------------
 //LOGOUT
 //---------------------------------------------------------------
 app.post("/logout", (req,res) => {
-    res.clearCookie("userID");
+    res.clearCookie("user_id");
     res.redirect("/urls");
 });
 //---------------------------------------------------------------
 
 
 //---------------------------------------------------------------
-//LOGIN
-//---------------------------------------------------------------
-app.post("/login", (req,res) => {
-    res.cookie("userID", req.body.userID);
-    res.redirect("/urls");
-});
-//---------------------------------------------------------------
-
-
-//---------------------------------------------------------------
-//DELETE FUNCTION
+//DELETE URL
 //---------------------------------------------------------------
 //Deletes a URL resource when user press DELETE button
 //from urls_index.ejs (http://localhost:8080/urls)
@@ -130,7 +181,7 @@ app.post("/urls/:shortURL/delete", (req,res) => {
 
 
 //---------------------------------------------------------------
-//EDIT FUNCTION
+//EDIT LONGURL
 //---------------------------------------------------------------
 //Updates longURL 
 //from urls_show.ejs 
@@ -141,6 +192,11 @@ app.post("/urls/:shortURL/update", (req,res) => {
 });
 //---------------------------------------------------------------
 
+
+//---------------------------------------------------------------
+//DISPLAY urlDatabase ARRAY OF OBJECTS
+//helper function
+//---------------------------------------------------------------
 //The "u" is to differentiate itself from /url/ and so it doesn't conflict with the other GET routes
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
@@ -148,17 +204,18 @@ app.get("/u/:shortURL", (req, res) => {
   ? res.redirect(longURL) 
   : res.send(`${req.params.shortURL} is not a valid short URL`);
 });
+//---------------------------------------------------------------
 
 
-//http://localhost:8080/urls/:shortURL
-app.get("/urls/:shortURL", (req, res) => {
-    let templateVars = {userID: req.cookies["userID"], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
-    res.render("urls_show", templateVars);
-  });
-
+//---------------------------------------------------------------
+//DISPLAY urlDatabase ARRAY OF OBJECTS
+//helper function
+//---------------------------------------------------------------
 app.get("/urls.json", (req, res) => {
     res.json(urlDatabase);
   });
+//---------------------------------------------------------------
+
 
 // app.get("/hello", (req, res) => {
 //     res.send("<html><body>Hello <b>World</b></body></html>\n");
@@ -167,6 +224,7 @@ app.get("/urls.json", (req, res) => {
 
 //---------------------------------------------------------------
 //GENERATES SHORTURL
+//helper function
 //---------------------------------------------------------------
 function generateRandomString() {
     let randomCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -180,7 +238,7 @@ function generateRandomString() {
 
 
 //---------------------------------------------------------------
-//Listener
+//LISTENER
 //---------------------------------------------------------------
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
