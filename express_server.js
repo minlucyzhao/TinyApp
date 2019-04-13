@@ -11,6 +11,7 @@ const bodyParser = require("body-parser");
 var express = require("express");
 var cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
+var cookieSession = require('cookie-session')
 
 var app = express();
 var PORT = 8080; 
@@ -62,6 +63,13 @@ app.use(cookieParser());
 
 //This needs to come before all of our routes
 app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(cookieSession({
+    name: 'session',
+    keys: ['key1'],
+  
+    // Cookie Options
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
 //---------------------------------------------------------------
 
 
