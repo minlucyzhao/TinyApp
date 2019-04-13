@@ -1,5 +1,4 @@
 <!-- Template for http://localhost:8080/register -->
-<!-- User Registration and Login -->
 
 <!DOCTYPE html>
 
@@ -15,8 +14,10 @@
 </head>
 
 <body style="font-size:20px; padding:50px;">
+     
+    <% include partials/_header %>
+
     <form method="POST" action="/register">
-        <a href="">Login</a> <a href="">Register</a>
         <h2>Create Account</h2>
         <h5>Email: </h5>
             <input class="form-control" type="email" name="email">
