@@ -17,27 +17,41 @@
 <body style="font-size:20px; padding:50px;">
     <% include partials/_header %>
 
-    <a href="">Create New TinyURL</a>
+    &nbsp;
+    
     <h3>My URLs</h3>
-        <ul>
+        <table>
             <% for(shortURL in urls) { %>
-            <li> <%= shortURL %> 👉 
+            <tr> 
+                <td>
+                <%= shortURL %> &nbsp; &nbsp;
+                </td>
+
+                <td>
+                👉 
                 <a href=<%= urls[shortURL] %>>
                     <%= urls[shortURL] %>
                 </a>
-
+                &nbsp; &nbsp; &nbsp;
+                </td>
+                
+                <td>
                 <a href="/urls/<%= shortURL %>">
                     EDIT ✎
-                </a>
+                </a> &nbsp; &nbsp;
+                </td>
 
+                <td>
                 <form method="POST" action="/urls/<%= shortURL %>/delete">
                     <button type="submit">
                         DELETE 🗑️
                     </button>
                 </form>
-            </li>
+                </td>
+
+            </tr>
             <% } %>
-        </ul>
+        </table>
     <a href=""></a>
 </body>
 
